@@ -1,8 +1,8 @@
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, SimpleUserSerializer
 from users.user_services import UserService
 from core.decorators.views_error_handling import handle_view_exceptions
 
@@ -58,4 +58,15 @@ class retrieveUpdateDeleteUserView(APIView):
     user = UserService.delete_user(id)
     serializer = UserSerializer(user)
     return Response(serializer.data)
+  
+
+class registerUserView(APIView):
+  permission_classes = [AllowAny]
+
+  @handle_view_exceptions
+  def post(self, request):
+    data = request.data
+    user = UserService.register_user(data)
+    serializer = SimpleUserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
     
