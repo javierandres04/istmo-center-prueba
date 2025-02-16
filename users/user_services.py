@@ -21,15 +21,15 @@ class UserService:
         return User.objects.all()
 
     @staticmethod
-    def get_user_by_username(username):
+    def get_user_by_id(id):
         try:
-            return User.objects.get(username=username)
+            return User.objects.get(id=id)
         except User.DoesNotExist:
             raise NotFound("User not found.")
     
     @staticmethod
-    def update_user(username, data, partial=False):
-        user = UserService.get_user_by_username(username)
+    def update_user(id, data, partial=False):
+        user = UserService.get_user_by_id(id)
         serializer = UserSerializer(user, data=data, partial=partial)
         if serializer.is_valid():
           user = serializer.save()
@@ -38,7 +38,7 @@ class UserService:
             raise ValidationError(serializer.errors)
     
     @staticmethod
-    def delete_user(username):
-        user = UserService.get_user_by_id(username)
+    def delete_user(id):
+        user = UserService.get_user_by_id(id)
         user.delete()
         return user
