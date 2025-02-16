@@ -1,0 +1,28 @@
+services:
+  djangoapp:
+    container_name: library-api
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PG_USER=admin
+      - PG_PASSWORD=S3cr3t
+      - PG_DB=library
+      - PG_HOST=db
+      - PG_PORT=5432
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=S3cr3t
+      - POSTGRES_DB=library
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}
