@@ -4,6 +4,8 @@ services:
     build: .
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
     environment:
       - PG_USER=admin
       - PG_PASSWORD=S3cr3t
@@ -26,3 +28,4 @@ services:
 
 volumes:
   pgdata: {}
+  
