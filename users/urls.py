@@ -3,6 +3,6 @@ from users import views
 
 
 urlpatterns = [ 
-  path('users/', views.listCreateUsersView.as_view()), 
-  path('users/<str:username>/', views.retrieveUpdateDeleteUserView.as_view())
+  path('users/', views.listCreateUsersView.as_view(), name='users-list-create'), 
+  path('users/<int:id>/', views.retrieveUpdateDeleteUserView.as_view(), name='users-datail')
 ]
