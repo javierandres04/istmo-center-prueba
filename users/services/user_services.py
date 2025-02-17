@@ -1,6 +1,6 @@
 
 
-from users.serializers import UserSerializer, SimpleUserSerializer
+from users.serializers.user_serializers import UserSerializer, SimpleUserSerializer
 from .models import User
 from rest_framework.exceptions import ValidationError, NotFound
 

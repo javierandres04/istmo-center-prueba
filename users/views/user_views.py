@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response 
 from rest_framework.views import APIView 
-from users.serializers import UserSerializer, SimpleUserSerializer
+from users.serializers.user_serializers import UserSerializer, SimpleUserSerializer
 from users.user_services import UserService
 from core.decorators.views_error_handling import handle_view_exceptions
 
