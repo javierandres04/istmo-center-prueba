@@ -28,7 +28,7 @@ class usersTests(APITestCase):
         url = reverse('users-list-create')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-    
+
     def test_create_user(self):
         url = reverse('users-list-create')
         data = {
@@ -41,10 +41,13 @@ class usersTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 2)
-        self.assertEqual(User.objects.get(email='test@test.com').email, 'test@test.com')
-        self.assertEqual(User.objects.get(email='test@test.com').name, 'Test User')
-        self.assertEqual(User.objects.get(email='test@test.com').role, User.Role.USER)
-    
+        self.assertEqual(User.objects.get(
+            email='test@test.com').email, 'test@test.com')
+        self.assertEqual(User.objects.get(
+            email='test@test.com').name, 'Test User')
+        self.assertEqual(User.objects.get(
+            email='test@test.com').role, User.Role.USER)
+
     def test_create_user_bad_request(self):
         url = reverse('users-list-create')
         data = {
@@ -93,7 +96,7 @@ class usersTests(APITestCase):
         self.assertEqual(response.data['email'], self.user.email)
         self.assertEqual(response.data['name'], self.user.name)
         self.assertEqual(response.data['role'], self.user.role)
-    
+
     def test_get_user_detail_not_found(self):
         url = reverse('users-detail', args=[3])
         response = self.client.get(url)
@@ -104,7 +107,7 @@ class usersTests(APITestCase):
         url = reverse('users-detail', args=[self.user.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-    
+
     def test_get_user_detail_not_admin(self):
         self.user.role = User.Role.USER
         self.user.save()
@@ -124,7 +127,7 @@ class usersTests(APITestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, 'test@test.com')
         self.assertEqual(self.user.check_password('testpass2'), True)
-    
+
     def test_update_user_patch_unauthorized(self):
         self.client.force_authenticate(user=None)
         url = reverse('users-detail', args=[self.user.id])
@@ -186,7 +189,7 @@ class usersTests(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(User.objects.count(), 1)
-    
+
     def test_user_delete_not_found(self):
         url = reverse('users-detail', args=[3])
         response = self.client.delete(url)
@@ -239,9 +242,8 @@ class usersTests(APITestCase):
         response = self.client.post(token_url, data, format='json')
         token = response.data['refresh']
 
-        response = self.client.post(refresh_url, {'refresh': token}, format='json')
+        response = self.client.post(
+            refresh_url, {'refresh': token}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('access', response.data)
         self.assertNotIn('refresh', response.data)
-
-

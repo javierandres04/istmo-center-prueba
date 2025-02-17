@@ -23,7 +23,7 @@ API_PREFIX = f'api/{API_VERSION}/'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+
     path(API_PREFIX, include('users.urls')),
     path(API_PREFIX, include('books.urls')),
 

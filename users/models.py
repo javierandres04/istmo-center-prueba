@@ -21,19 +21,21 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractUser):
     class Role(models.TextChoices):
         USER = 'USER', 'User'
         ADMIN = 'ADMIN', 'Admin'
-    
-    role = models.CharField(max_length=5, choices=Role.choices, default=Role.USER)
+
+    role = models.CharField(
+        max_length=5, choices=Role.choices, default=Role.USER)
     email = models.EmailField(max_length=30, unique=True)
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-   
+
     objects = UserManager()
 
-    username = None # Remove the email field from the parent class
+    username = None  # Remove the email field from the parent class
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

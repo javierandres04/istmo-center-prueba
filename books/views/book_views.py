@@ -38,6 +38,7 @@ class ListCreateBooksView(APIView):
         serializer = BookSerializer(book)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
 class retrieveUpdateDeleteBookView(APIView):
     # Only Admin users can modify books
     def get_permissions(self):

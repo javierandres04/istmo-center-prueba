@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase, APIClient
 from books.models import Book
 from users.models import User
 
+
 class BookTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -17,7 +18,7 @@ class BookTests(APITestCase):
         self.book = Book.objects.create(
             title='Test Book',
             author='Test Author',
-            isbn = '1234567890',
+            isbn='1234567890',
             genre='Test Genre',
             available=True
         )
@@ -34,11 +35,11 @@ class BookTests(APITestCase):
             Book.objects.create(
                 title=f'Test Book {i}',
                 author='Test Author',
-                isbn = f'1234{i}',
+                isbn=f'1234{i}',
                 genre='Test Genre',
                 available=True
             )
-        
+
         url = reverse('books-list-create')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -48,18 +49,18 @@ class BookTests(APITestCase):
         self.assertIn('current_page', response.data)
         self.assertIn('results', response.data)
         self.assertEqual(len(response.data['results']), 5)
-    
+
     def test_list_books_pagination_limit(self):
         Book.objects.all().delete()
         for i in range(15):
             Book.objects.create(
                 title=f'Test Book {i}',
                 author='Test Author',
-                isbn = f'1234{i}',
+                isbn=f'1234{i}',
                 genre='Test Genre',
                 available=True
             )
-        
+
         url = reverse('books-list-create')
         response = self.client.get(url + '?limit=10')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -71,15 +72,15 @@ class BookTests(APITestCase):
             Book.objects.create(
                 title=f'Test Book {i}',
                 author='Test Author',
-                isbn = f'1234{i}',
+                isbn=f'1234{i}',
                 genre='Test Genre',
                 available=True
             )
-        
+
         url = reverse('books-list-create')
         response = self.client.get(url + '?limit=10&page=2')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 5)   
+        self.assertEqual(len(response.data['results']), 5)
         self.assertEqual(response.data['current_page'], 2)
         self.assertEqual(response.data['total_pages'], 2)
         self.assertNotEqual(response.data['previous'], None)
@@ -89,7 +90,7 @@ class BookTests(APITestCase):
         url = reverse('books-list-create')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-    
+
     def test_list_books_empty(self):
         Book.objects.all().delete()
         url = reverse('books-list-create')
@@ -102,19 +103,17 @@ class BookTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], self.book.title)
-    
 
     def test_get_book_detail_not_found(self):
         url = reverse('books-detail', args=[3])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-    
+
     def test_get_book_detail_unauthorized(self):
         self.client.force_authenticate(user=None)
         url = reverse('books-detail', args=[self.book.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
     def test_create_book_ok(self):
         url = reverse('books-list-create')
@@ -157,7 +156,7 @@ class BookTests(APITestCase):
         books = Book.objects.all()
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(books.count(), 1)
-    
+
     def test_create_book_bad_Request(self):
         url = reverse('books-list-create')
         data = {
@@ -176,7 +175,7 @@ class BookTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.book.refresh_from_db()
         self.assertEqual(self.book.title, 'Updated Title')
-        
+
     def test_update_book_unauthorized(self):
         self.client.force_authenticate(user=None)
         url = reverse('books-detail', args=[self.book.id])
@@ -232,7 +231,7 @@ class BookTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Book.objects.count(), 0)
 
-    def test_delete_book_not_found(self):	
+    def test_delete_book_not_found(self):
         url = reverse('books-detail', args=[3])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

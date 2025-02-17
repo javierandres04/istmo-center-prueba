@@ -18,8 +18,8 @@ class listCreateUsersView(APIView):
     def get(self, request):
         users = UserService.get_all()
 
-        result_page = self.paginator.paginate_queryset(users, request)        
-        
+        result_page = self.paginator.paginate_queryset(users, request)
+
         serializer = UserSerializer(result_page, many=True)
         return self.paginator.get_paginated_response(serializer.data)
 
@@ -34,7 +34,7 @@ class listCreateUsersView(APIView):
 # Class based view used to retrieve, update and delete an specific user
 class retrieveUpdateDeleteUserView(APIView):
     permission_classes = [IsAdminUser, IsAuthenticated]
-    
+
     # get user by id
     @handle_view_exceptions
     def get(self, request, id):

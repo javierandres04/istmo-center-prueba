@@ -24,7 +24,7 @@ class UserService(BaseCrudService):
             user.save()
 
             return serializer.data
-    
+
     # Need to override update method to hash password
     @classmethod
     def update(self, id, data, partial=False):
