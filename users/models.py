@@ -38,6 +38,8 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    def __str__(self):
+        return f'{self.email} - {self.role}'
 
     def save(self, *args, **kwargs):
         # If the user is an admin, set is_staff

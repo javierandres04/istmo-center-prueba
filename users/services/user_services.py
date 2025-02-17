@@ -46,7 +46,7 @@ class UserService(BaseCrudService):
             return user
 
     # Added method to register a simple user
-    @classmethod
+    @staticmethod
     def register_user(data):
         serializer = SimpleUserSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
