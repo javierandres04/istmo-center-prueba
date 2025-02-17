@@ -66,7 +66,7 @@ class UserService:
                 user.name = serializer.validated_data['name']
                 user.role = serializer.validated_data['role']
                 user.set_password(serializer.validated_data['password'])
-
+            user.save()
             return user
         else:
             raise ValidationError(serializer.errors)

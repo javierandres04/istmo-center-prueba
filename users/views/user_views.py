@@ -33,6 +33,8 @@ class listCreateUsersView(APIView):
 
 # Class based view used to retrieve, update and delete an specific user
 class retrieveUpdateDeleteUserView(APIView):
+    permission_classes = [IsAdminUser, IsAuthenticated]
+    
     # get user by id
     @handle_view_exceptions
     def get(self, request, id):
