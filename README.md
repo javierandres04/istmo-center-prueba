@@ -384,3 +384,34 @@ Todos los usuarios pueden acceder a esta ruta.
 
 Al devolver un libro se actualiza la fecha de devolución del prestamo ligado al usuario, además se vuelve a poner el libro como disponible.
 
+
+## Cómo ejecutar la aplicación
+
+Para ejecutar la aplicación es necesario tener Docker instalado, una vez hecho esto solo debes ejecutar el comando `docker compose up` desde la raíz del proyecto. Esto se encargará de levantar las migraciones, así como también de levantar los servicios necesarios. 
+
+### Superusuario
+El modelo de usuario utilizado hereda del AbstractUser de Django, por lo tanto, se puede crear un usuario administrador utilizando el comando docker exec container_name python manage.py createsuperuser. 
+
+Para saber el nombre del contenedor se puede utilizar el comando
+`docker ps -a` el nombre del contenedor está bajo `CONTAINER ID`.
+
+### Autenticación
+Para utilizar la mayoría de rutas es necesario contar con un JWT válido. Para obtenerlo es necesario enviar una petición POST con las credenciales del usuario a la ruta `api/v1/token/`. El token tiene una vida útil de 5 minutos, sin embargo, se puede refrescar haciendo uso de la ruta  `api/v1/token/refresh/`.
+
+Para utilizar el token correctamente se debe agregar al header de cualquier petición los siguientes datos.
+
+`Authorization:Bearer {token de acceso}`
+
+### Testing
+Para ejecutar las pruebas se debe acceder a la consola del docker container al igual que para crear el superusuario. Habiendo obtenido el container_name se ejecuta docker `exec container_name python manage.py test`.
+
+### Consideraciones
+* El servidor de desarrollo de Django no es ideal para ambientes de producción, este debe ser sustituido por algún servidor dedicado como Apache o Gunicorn.
+
+* Al ser una aplicación en desarrollo cuenta con la propiedad de Django  `DEBUG=TRUE`, esto debe ser cambiado para ambientes de producción.
+
+* Toda petición que cuente con un body debe ser enviada agregando el '/' al final del URL, esto debido a que Django levanta una excepción si la petición no es enviada de esa forma. Ejemplo: Para una petición POST user `api/v1/users/` en lugar de `api/v1/users`. 
+
+
+
+
