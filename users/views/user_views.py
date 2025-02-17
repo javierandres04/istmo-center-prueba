@@ -16,7 +16,7 @@ class listCreateUsersView(APIView):
     # Get All Users
     @handle_view_exceptions
     def get(self, request):
-        users = UserService.get_users()
+        users = UserService.get_all()
 
         result_page = self.paginator.paginate_queryset(users, request)        
         
@@ -27,7 +27,7 @@ class listCreateUsersView(APIView):
     @handle_view_exceptions
     def post(self, request):
         data = request.data
-        user = UserService.create_user(data)
+        user = UserService.create(data)
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -38,7 +38,7 @@ class retrieveUpdateDeleteUserView(APIView):
     # get user by id
     @handle_view_exceptions
     def get(self, request, id):
-        user = UserService.get_user_by_id(id)
+        user = UserService.get_by_id(id)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -46,7 +46,7 @@ class retrieveUpdateDeleteUserView(APIView):
     @handle_view_exceptions
     def put(self, request, id):
         data = request.data
-        user = UserService.update_user(id, data)
+        user = UserService.update(id, data)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
@@ -54,14 +54,14 @@ class retrieveUpdateDeleteUserView(APIView):
     @handle_view_exceptions
     def patch(self, request, id):
         data = request.data
-        user = UserService.update_user(id, data, partial=True)
+        user = UserService.update(id, data, partial=True)
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
     # delete user
     @handle_view_exceptions
     def delete(self, request, id):
-        user = UserService.delete_user(id)
+        user = UserService.delete(id)
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
