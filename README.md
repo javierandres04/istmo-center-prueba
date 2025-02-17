@@ -389,6 +389,19 @@ Al devolver un libro se actualiza la fecha de devolución del prestamo ligado al
 
 Para ejecutar la aplicación es necesario tener Docker instalado, una vez hecho esto solo hay que ejecutar el comando `docker compose up` desde la raíz del proyecto. Docker se encargará de levantar las migraciones, así como también de levantar los servicios necesarios. 
 
+Antes de ejecutar el comando `docker compose up` hay que asegurarse de tener el archivo `.env.dev` configurado con los siguientes apartados(pueden cambiarlos a su gusto ya que es un ambiente de desarrollo, pero es necesario que estén todos): 
+
+```
+PG_USER=admin
+PG_PASSWORD=S3cr3t
+PG_DB=library
+PG_HOST=db
+PG_PORT=5432
+```
+
+este archivo debe existir en la raíz del proyecto
+
+
 ### Superusuario
 El modelo de usuario utilizado hereda del AbstractUser de Django, por lo tanto, se puede crear un usuario administrador utilizando el comando `docker exec container_name python manage.py createsuperuser`. 
 
@@ -406,10 +419,11 @@ Para utilizar el token correctamente se debe agregar al header de cualquier peti
 Para ejecutar las pruebas se debe acceder a la consola del docker container al igual que para crear el superusuario. Habiendo obtenido el container_name se ejecuta docker `exec container_name python manage.py test`.
 
 ### Consideraciones
-* El servidor de desarrollo de Django no es ideal para ambientes de producción, este debe ser sustituido por algún servidor dedicado como Apache o Gunicorn.
+* El servidor de desarrollo de Django no es ideal para ambientes de producción, para este proyecto se utilizó Gunicorn. Es necesario configurar nginx si se quieren manejar archivos estáticos en este API.
 
 * Toda petición que cuente con un body debe ser enviada agregando el '/' al final del URL, esto debido a que Django convierte esta petición en GET si no se envia correctamente. Ejemplo: Para una petición POST user `api/v1/users/` en lugar de `api/v1/users`. 
 
+* Django Rest Framework genera unas páginas mediante las que se puede interactuar con el API, sin embargo, lo mejor es probarla desde un aplicación dedicada a hacer llamados HTTP como POSTMAN.
 
 
 

@@ -8,4 +8,4 @@ python manage.py migrate
 echo "--------------------------------------------"
 
 echo "Starting server"
-python manage.py runserver 0.0.0.0:8000
+python -m gunicorn --bind 0.0.0.0:8000 --workers 3 core.wsgi 
