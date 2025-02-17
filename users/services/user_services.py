@@ -41,7 +41,7 @@ class UserService:
 
     @staticmethod
     def get_users():
-        return User.objects.all()
+        return User.objects.all().order_by('id')
 
     @staticmethod
     def get_user_by_id(id):

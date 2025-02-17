@@ -10,7 +10,7 @@ class customResultsPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
         return Response({
-            'total_Records': self.page.paginator.count,
+            'total_records': self.page.paginator.count,
             'total_pages': self.page.paginator.num_pages,
             'current_page': self.page.number,
             'next': self.get_next_link(),

@@ -16,7 +16,7 @@ class BookService:
 
     @staticmethod
     def get_books():
-      return Book.objects.all()
+      return Book.objects.all().order_by('id')
 
     @staticmethod
     def get_book_by_id(id):
