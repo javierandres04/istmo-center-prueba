@@ -5,18 +5,23 @@ from rest_framework.views import APIView
 from users.serializers.user_serializers import UserSerializer, SimpleUserSerializer
 from users.services.user_services import UserService
 from core.decorators.views_error_handling import handle_view_exceptions
+from core.utils.paginator import customResultsPagination
 
 
 # Class based view used to create and list all the users
 class listCreateUsersView(APIView):
     permission_classes = [IsAdminUser, IsAuthenticated]
+    paginator = customResultsPagination()
 
     # Get All Users
     @handle_view_exceptions
     def get(self, request):
         users = UserService.get_users()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+
+        result_page = self.paginator.paginate_queryset(users, request)        
+        
+        serializer = UserSerializer(result_page, many=True)
+        return self.paginator.get_paginated_response(serializer.data)
 
     # Create User
     @handle_view_exceptions
@@ -27,8 +32,6 @@ class listCreateUsersView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 # Class based view used to retrieve, update and delete an specific user
-
-
 class retrieveUpdateDeleteUserView(APIView):
     # get user by id
     @handle_view_exceptions
@@ -60,7 +63,7 @@ class retrieveUpdateDeleteUserView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-
+# Class based view used to register a new user without admin permissions
 class registerUserView(APIView):
     permission_classes = [AllowAny]
 

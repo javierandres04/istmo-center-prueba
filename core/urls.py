@@ -18,8 +18,16 @@ from django.contrib import admin
 from django.urls import include, path
 
 
+API_VERSION = 'v1'
+API_PREFIX = f'api/{API_VERSION}/'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include('users.urls')),
+    
+    path(API_PREFIX, include('users.urls')),
+    path(API_PREFIX, include('books.urls')),
+
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+
 ]
