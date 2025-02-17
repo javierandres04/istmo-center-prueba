@@ -10,7 +10,7 @@ class BookSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
 
-class BookLoanSerializer(serializers.ModelSerializer):
+class ListBookLoanSerializer(serializers.ModelSerializer):
     book_title = serializers.CharField(source='book.title', read_only=True)
     book_isbn = serializers.CharField(source='book.isbn', read_only=True)
     book_id = serializers.IntegerField(source='book.id', read_only=True)
@@ -23,3 +23,7 @@ class BookLoanSerializer(serializers.ModelSerializer):
                   'book_id', 'book_title', 'book_isbn', 'user_id', 'user_email']
         extra_kwargs = {'id': {'read_only': True}, 'loan_date': {'read_only': True},
                         'return_date': {'read_only': True}, 'returned': {'read_only': True}}
+
+class createLoanSerializer(serializers.Serializer):
+    book_id = serializers.IntegerField()
+    

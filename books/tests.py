@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from books.models import Book
+from books.models import Book, BookLoan
 from users.models import User
 
 
@@ -249,3 +249,121 @@ class BookTests(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Book.objects.count(), 1)
+
+    def test_loan_book_ok(self):
+        url = reverse('book-loans')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        book_loan = BookLoan.objects.get(book_id=self.book.id, user_id=self.user.id, returned = False)
+        self.book.refresh_from_db()
+        self.assertEqual(self.book.available, False)
+        self.assertEqual(self.book.id, book_loan.book_id)
+
+    def test_loan_book_not_found(self):
+        url = reverse('book-loans')
+        data = {'book_id': 3}
+        response = self.client.post(url, data)
+        book = Book.objects.get(id=self.book.id)
+        book_loan = BookLoan.objects.filter(book_id=3, user_id=self.user.id, returned = False).first()
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(book.available, True)
+        self.assertEqual(book_loan, None)
+    
+    def test_loan_book_bad_quest(self):
+        url = reverse('book-loans')
+        data = {}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(BookLoan.objects.count(), 0)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, True)
+
+    def test_loan_book_not_available(self):
+        self.book.available = False
+        self.book.save()
+        url = reverse('book-loans')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(BookLoan.objects.count(), 0)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, False)
+
+    def test_loan_book_twice(self):
+        BookLoan.objects.create(book=self.book, user=self.user)
+        self.book.available = False
+        self.book.save()
+
+        url = reverse('book-loans')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(BookLoan.objects.count(), 1)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, False)
+        self.assertEqual(BookLoan.objects.get(book_id=self.book.id, user_id=self.user.id).returned, False)
+
+    def test_two_users_loan_book(self):
+        user2 = User.objects.create_user (
+            email = 'user2@example.com',
+            password = 'password123',
+            role = User.Role.USER
+        )
+        self.client.force_authenticate(user2)
+
+        url = reverse('book-loans')
+        data = {'book_id': self.book.id}
+
+        response = self.client.post(url, data)
+
+        self.client.force_authenticate(user=self.user)
+        response2 = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response2.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(BookLoan.objects.count(), 1)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, False)
+
+    def test_loan_book_unauthorized(self):
+        self.client.force_authenticate(user=None)
+        url = reverse('book-loans')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(BookLoan.objects.count(), 0)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, True)
+
+    def test_return_book_ok(self):
+        book_loan = BookLoan.objects.create(book=self.book, user=self.user)
+        url = reverse('return-book')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        book_loan.refresh_from_db()
+        self.book.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(book_loan.returned, True)
+        self.assertEqual(self.book.available, True)
+    
+    def test_return_book_not_found(self):
+        url = reverse('return-book')
+        data = {'book_id': 3}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
+    def test_return_book_not_loaned(self):
+        url = reverse('return-book')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(BookLoan.objects.count(), 0)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, True)
+
+    def test_return_book_unauthorized(self):
+        self.client.force_authenticate(user=None)
+        url = reverse('return-book')
+        data = {'book_id': self.book.id}
+        response = self.client.post(url, data)
+        self.book.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(BookLoan.objects.count(), 0)
+        self.assertEqual(Book.objects.get(id=self.book.id).available, True)
+    

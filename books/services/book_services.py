@@ -1,9 +1,9 @@
-from datetime import datetime
-from books.serializers.book_serializers import BookSerializer
+from django.utils import timezone
+from books.serializers.book_serializers import BookSerializer, createLoanSerializer
 from books.models import Book, BookLoan
 from core.utils.base_crud_service import BaseCrudService
 from django.db import transaction
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 
 # Utility class to manage book operations
@@ -19,7 +19,11 @@ class loanBookService():
         return BookLoan.objects.filter(user_id=user_id).all().order_by('loan_date')
 
     @staticmethod
-    def loan_book(book_id, user_id):
+    def loan_book(data, user_id):
+        create_serializer = createLoanSerializer(data=data)
+        create_serializer.is_valid(raise_exception=True)
+        book_id = create_serializer.validated_data.get('book_id')
+
         book_loan = None
         # Create a transaction to ensure that the book is not loaned to two users at the same time
         with transaction.atomic():
@@ -32,13 +36,19 @@ class loanBookService():
                         book=book,
                         user_id=user_id,
                     )
+                else:
+                    raise ValidationError(f"Book not available.")
             else:
                 raise NotFound(f"Book not found.")
 
         return book_loan
 
     @staticmethod
-    def return_book(book_id, user_id):
+    def return_book(data, user_id):
+        create_serializer = createLoanSerializer(data=data)
+        create_serializer.is_valid(raise_exception=True)
+        book_id = create_serializer.validated_data.get('book_id')
+
         book_loan = False
         with transaction.atomic():
             book = Book.objects.select_for_update().filter(id=book_id).first()
@@ -50,11 +60,11 @@ class loanBookService():
                     book.save()
 
                     book_loan.returned = True
-                    book_loan.return_date = datetime.now()
+                    book_loan.return_date = timezone.now()
                     book_loan.save()
 
                 else:
-                    raise NotFound(f"Book not loaned to user.")
+                    raise ValidationError(f"Book not loaned to user.")
             else:
                 raise NotFound(f"Book not found.")
 
