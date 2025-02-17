@@ -61,7 +61,7 @@ class retrieveUpdateDeleteUserView(APIView):
     def delete(self, request, id):
         user = UserService.delete_user(id)
         serializer = UserSerializer(user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 # Class based view used to register a new user without admin permissions
 class registerUserView(APIView):

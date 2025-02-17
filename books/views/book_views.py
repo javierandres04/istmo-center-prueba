@@ -70,4 +70,4 @@ class retrieveUpdateDeleteBookView(APIView):
     def delete(self, request, id):
         book = BookService.delete_book(id)
         serializer = BookSerializer(book)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
