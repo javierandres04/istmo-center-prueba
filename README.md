@@ -390,7 +390,7 @@ Al devolver un libro se actualiza la fecha de devolución del prestamo ligado al
 Para ejecutar la aplicación es necesario tener Docker instalado, una vez hecho esto solo hay que ejecutar el comando `docker compose up` desde la raíz del proyecto. Docker se encargará de levantar las migraciones, así como también de levantar los servicios necesarios. 
 
 ### Superusuario
-El modelo de usuario utilizado hereda del AbstractUser de Django, por lo tanto, se puede crear un usuario administrador utilizando el comando docker exec container_name python manage.py createsuperuser. 
+El modelo de usuario utilizado hereda del AbstractUser de Django, por lo tanto, se puede crear un usuario administrador utilizando el comando `docker exec container_name python manage.py createsuperuser`. 
 
 Para saber el nombre del contenedor se puede utilizar el comando
 `docker ps -a` el nombre del contenedor está bajo `CONTAINER ID`.
