@@ -27,4 +27,7 @@ urlpatterns = [
     path(API_PREFIX, include('users.urls')),
     path(API_PREFIX, include('books.urls')),
 
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+
 ]
