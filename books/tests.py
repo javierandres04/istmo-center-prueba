@@ -3,10 +3,12 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from books.models import Book, BookLoan
 from users.models import User
+import logging
 
 
 class BookTests(APITestCase):
     def setUp(self):
+        logging.disable(logging.CRITICAL)
         self.user = User.objects.create_user(
             email='testuser@example.com',
             password='testpass123',

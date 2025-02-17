@@ -1,4 +1,5 @@
 
+import logging
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
@@ -12,7 +13,8 @@ class usersTests(APITestCase):
             password='testpass123',
             role=User.Role.ADMIN
         )
-
+        
+        logging.disable(logging.CRITICAL)
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 

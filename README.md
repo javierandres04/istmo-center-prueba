@@ -408,9 +408,7 @@ Para ejecutar las pruebas se debe acceder a la consola del docker container al i
 ### Consideraciones
 * El servidor de desarrollo de Django no es ideal para ambientes de producción, este debe ser sustituido por algún servidor dedicado como Apache o Gunicorn.
 
-* Al ser una aplicación en desarrollo cuenta con la propiedad de Django  `DEBUG=TRUE`, esto debe ser cambiado para ambientes de producción.
-
-* Toda petición que cuente con un body debe ser enviada agregando el '/' al final del URL, esto debido a que Django levanta una excepción si la petición no es enviada de esa forma. Ejemplo: Para una petición POST user `api/v1/users/` en lugar de `api/v1/users`. 
+* Toda petición que cuente con un body debe ser enviada agregando el '/' al final del URL, esto debido a que Django convierte esta petición en GET si no se envia correctamente. Ejemplo: Para una petición POST user `api/v1/users/` en lugar de `api/v1/users`. 
 
 
 

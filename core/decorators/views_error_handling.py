@@ -11,11 +11,11 @@ def handle_view_exceptions(func):
         try:
             return func(self, request, *args, **kwargs)
         except ValidationError as e:
-            logger.error(f"Validation Error When Processing Request: {e.detail}")
-            return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+            logger.error(f"Error: {e.detail}")
+            return Response({"Error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
         except NotFound as e:
-            logger.error(f"Resource Not Found: {e.detail}")
-            return Response({"error": e.detail}, status=status.HTTP_404_NOT_FOUND)
+            logger.error(f"Error: {e.detail}")
+            return Response({"Error": e.detail}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Internal Server Error: {e}")
             return Response({"error": f"An unexpected error occour"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
